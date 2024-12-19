@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Quiz App</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: #fff;
+            overflow: auto;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: #1e1e2f;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        header h1 {
+            font-size: 1.5rem;
+        }
+        footer {
+            background: #1e1e2f;
+            color: #ccc;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-bottom: 60px;
+        }
+        .homepage {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .topic {
+            background: #1e1e2f;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .topic:hover {
+            transform: scale(1.05);
+        }
+        .topic img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+        .topic h3 {
+            margin: 10px;
+        }
+        .quiz-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 20px;
+            background: #1e1e2f;
+            border-radius: 10px;
+            margin-top: 24px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        .quiz-content {
+            width: 70%;
+        }
+        .progress-container {
+            width: 25%;
+            padding: 10px;
+            background: #282845;
+            border-radius: 10px;
+            margin-left: 10px;
+        }
+        .progress-container ul {
+            list-style: none;
+            padding: 0;
+        }
+        .progress-container li {
+            margin: 10px 0;
+        }
+        .question {
+            margin: 20px 0;
+            font-size: 1.2rem;
+        }
+        .answers button {
+    background: #2575fc;
+    color: #fff;
+    border: none;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.3s ease;
+    width: 100%; /* Ensures the buttons fit the width of the container */
+}
+
+.answers button:hover {
+    background: #1a5ccc;
+}
+
+.answers button:disabled {
+    cursor: not-allowed;
+}
+
+.answers button.correct {
+    background-color: green; /* Correct answer color */
+}
+
+.answers button.wrong {
+    background-color: red; /* Wrong answer color */
+}
+
+.answers button.skipped {
+    background-color: #808080; /* Skipped question color */
+}
+
+        .answers button:hover {
+            background: #1a5ccc;
+        }
+        .quiz-footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .quiz-footer button {
+            background: #6a11cb;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s ease;
+        }
+        .quiz-footer button:hover {
+            background: #5118a5;
+        }
+        @media (max-width: 600px) {
+            .quiz-container {
+                flex-direction: column;
+            }
+            .quiz-content {
+                width: 100%;
+            }
+            .progress-container {
+                width: 80%;
+                margin-top: 20px;
+            }
+        }
+        .answers button {
+    background: #2575fc;
+    color: #fff;
+    border: none;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.3s ease;
+    width: 100%;
+}
+
+.answers button:hover {
+    background: #1a5ccc;
+}
+
+.answers button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5; /* Reduced opacity for disabled buttons */
+}
+.progress-bar-container {
+    width: 100%;
+    background-color: #ddd;
+    border-radius: 10px;
+    height: 20px;
+    margin-bottom: 20px; /* Space between progress bar and question */
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background-color: #4caf50;
+    transition: width 0.5s ease;
+}
+
+#results-page {
+    background-color: #1e1e2f;
+    padding: 20px;
+    border-radius: 10px;
+    color: #fff;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.results-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+button {
+    background: #2575fc;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+button:hover {
+    background: #1a5ccc;
+}
+h1.intro{
+display: flex;
+justify-content: center;
+align-items: center;
+padding: 0px 20px;
+}
+/* Add this to your CSS file or inside <style> tags in your HTML */
+    body {
+    margin: 0;
+    height: 100vh;
+    background: linear-gradient(45deg, #ff6b6b, #f0e130, #1e90ff, #32cd32);
+    background-size: 400% 400%;
+    animation: gradientAnimation 10s ease infinite;
+}
+
+@keyframes gradientAnimation {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.quiz-container {
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, 0);
+    padding: 20px;
+    background-color: rgb(211 189 189 / 29%);
+    border-radius: 10px;
+    width: 80%;
+    max-width: 600px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+button {
+    padding: 10px;
+    margin: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+    transform: scale(1.05);
+    background-color: rgba(0, 123, 255, 0.6);
+}
+
+button:active {
+    transform: scale(1);
+    background-color: rgba(0, 123, 255, 0.9);
+}
+
+.dummy{
+    margin:  40px;
+}
+
+
+
+    </style>
+</head>
+<body>
+    
+    <header>
+        <h1>Interactive Quiz App</h1>
+    </header>
+
+    <div class="container">
+        <h1 class="intro">Lets Enjoy The Quiz!</h1>
+
+        <div class="homepage" id="homepage">
+
+            <div class="topic" onclick="selectCategory('Travel')">
+                <img src="travel.jpg" alt="Travel">
+                <h3>Travel</h3>
+            </div>
+            <div class="topic" onclick="selectCategory('Sports')">
+                <img src="sports.jpg" alt="Sports">
+                <h3>Sports</h3>
+            </div>
+            <div class="topic" onclick="selectCategory('Technology')">
+                <img src="technology.jpg" alt="Technology">
+                <h3>Technology</h3>
+            </div>
+            <div class="topic" onclick="selectCategory('Health')">
+                <img src="health.jpg" alt="Health">
+                <h3>Health</h3>
+            </div>
+            <div class="topic" onclick="selectCategory('Entertainment')">
+                <img src="entertainment.jpg" alt="Entertainment">
+                <h3>Entertainment</h3>
+            </div>
+            <div class="topic" onclick="selectCategory('Education')">
+                <img src="education.jpg" alt="Education">
+                <h3>Education</h3>
+            </div>
+            <div class="topic" onclick="selectCategory('Science')">
+                <img src="science.jpg" alt="Science">
+                <h3>Science</h3>
+            </div>
+            <div class="topic" onclick="selectCategory('History')">
+                <img src="history.jpg" alt="History">
+                <h3>History</h3>
+            </div>
+            <div class="topic" onclick="selectCategory('Geography')">
+                <img src="geography.jpg" alt="Geography">
+                <h3>Geography</h3>
+            </div>
+            <div class="topic" onclick="selectCategory('Literature')">
+                <img src="literature.jpg" alt="Literature">
+                <h3>Literature</h3>
+            </div>
+            <div class="topic" onclick="selectCategory('Art')">
+                <img src="art.jpg" alt="Art">
+                <h3>Art</h3>
+            </div>
+            <div class="topic" onclick="selectCategory('Music')">
+                <img src="music.jpg" alt="Music">
+                <h3>Music</h3>
+            </div>
+            <div class="topic" onclick="selectCategory('Politics')">
+                <img src="politics.jpg" alt="Politics">
+                <h3>Politics</h3>
+            </div>
+            <div class="topic" onclick="selectCategory('Business')">
+                <img src="business.jpg" alt="Business">
+                <h3>Business</h3>
+            </div>
+            <div class="topic" onclick="selectCategory('Nature')">
+                <img src="nature.jpg" alt="Nature">
+                <h3>Nature</h3>
+            </div>
+            <div class="topic" onclick="selectCategory('Animals')">
+                <img src="animals.jpg" alt="Animals">
+                <h3>Animals</h3>
+            </div>
+            <div class="topic" onclick="selectCategory('Mathematics')">
+                <img src="mathematics.jpg" alt="Mathematics">
+                <h3>Mathematics</h3>
+            </div>
+            <div class="topic" onclick="selectCategory('Space')">
+                <img src="space.jpg" alt="Space">
+                <h3>Space</h3>
+            </div>
+            <div class="topic" onclick="selectCategory('Philosophy')">
+                <img src="philosophy.jpg" alt="Philosophy">
+                <h3>Philosophy</h3>
+            </div>
+            <div class="topic" onclick="selectCategory('Languages')">
+                <img src="languages.jpg" alt="Languages">
+                <h3>Languages</h3>
+            </div>
+            <div class="topic" onclick="selectCategory('Movies')">
+                <img src="movies.jpg" alt="Movies">
+                <h3>Movies</h3>
+            </div>
+            <div class="topic" onclick="selectCategory('Gaming')">
+                <img src="gaming.jpg" alt="Gaming">
+                <h3>Gaming</h3>
+            </div>
+            <div class="topic" onclick="selectCategory('Fashion')">
+                <img src="fashion.jpg" alt="Fashion">
+                <h3>Fashion</h3>
+            </div>
+        </div>
+
+        <div class="quiz-container" id="quiz-container" style="display: none;">
+            <div class="quiz-content">
+                <!-- Add the progress bar container above the quiz questions -->
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progress-bar"></div>
+                </div>
+        
+                <div class="quiz-header">
+                    <h1 id="quiz-title">Quiz</h1>
+                </div>
+                <div id="quiz">
+                    <div class="question">Question text will appear here...</div>
+                    <div class="answers">
+                        <button onclick="selectAnswer(0)">Answer 1</button>
+                        <button onclick="selectAnswer(1)">Answer 2</button>
+                        <button onclick="selectAnswer(2)">Answer 3</button>
+                        <button onclick="selectAnswer(3)">Answer 4</button>
+                    </div>
+                </div>
+                <div class="quiz-footer">
+                    <button onclick="skipQuestion()">Skip</button>
+                    <button id="next-btn" onclick="nextQuestion()" disabled>Next</button>
+                </div>
+            </div>
+        
+            <div class="progress-container">
+                <h3>Progress</h3>
+                <ul>
+                    <li>Total Questions: <span id="total-questions">0</span></li>
+                    <li>Attempted: <span id="attempted-questions">0</span></li>
+                    <li>Pending: <span id="pending-questions">0</span></li>
+                    <li>Correct: <span id="correct-questions">0</span></li>
+                    <li>Wrong: <span id="wrong-questions">0</span></li>
+                </ul>
+            </div>
+            <div class="dummy">
+
+            </div>
+        </div>
+        
+        <div id="results-page" style="display: none;">
+            <div class="results-container">
+                <h2>Final Results</h2>
+                <p><strong>Score:</strong> <span id="final-score"></span></p>
+                <p><strong>Correct Answers:</strong> <span id="final-correct"></span></p>
+                <p><strong>Wrong Answers:</strong> <span id="final-wrong"></span></p>
+                <p><strong>Skipped Questions:</strong> <span id="final-skipped"></span></p>
+                <button onclick="restartQuiz()">Restart Quiz</button>
+            </div>
+        </div>
+        
+
+    </div>
+
+    <footer>
+        <p>© 2024 Interactive Quiz App. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        const categories = {
+Travel: [
+    { question: "What is the tallest mountain in the world?", answers: ["Mount Everest", "K2", "Kangchenjunga", "Lhotse"], correct: 0 },
+    { question: "Which country is known as the Land of the Rising Sun?", answers: ["Japan", "China", "Korea", "India"], correct: 0 },
+    { question: "What is the capital of Canada?", answers: ["Ottawa", "Toronto", "Vancouver", "Montreal"], correct: 0 },
+    { question: "Which city is known as the Eternal City?", answers: ["Rome", "Athens", "Paris", "New York"], correct: 0 },
+    { question: "What country is famous for the Eiffel Tower?", answers: ["France", "Italy", "Germany", "England"], correct: 0 },
+    { question: "Which river is the longest in the world?", answers: ["Nile", "Amazon", "Yangtze", "Mississippi"], correct: 0 },
+    { question: "Which country is home to the Great Barrier Reef?", answers: ["Australia", "New Zealand", "USA", "Mexico"], correct: 0 },
+    { question: "Where is the Great Wall located?", answers: ["China", "India", "Japan", "South Korea"], correct: 0 },
+    { question: "Which city is known as the Big Apple?", answers: ["New York", "Los Angeles", "Chicago", "San Francisco"], correct: 0 },
+    { question: "Which country is famous for tulips and windmills?", answers: ["Netherlands", "Germany", "Belgium", "France"], correct: 0 },
+    { question: "Which African country is famous for its pyramids?", answers: ["Egypt", "Morocco", "Kenya", "Nigeria"], correct: 0 },
+    { question: "Where is the Taj Mahal located?", answers: ["India", "Pakistan", "Nepal", "Bangladesh"], correct: 0 },
+    { question: "Which desert is the largest in the world?", answers: ["Sahara", "Gobi", "Kalahari", "Atacama"], correct: 0 },
+    { question: "In which country can you visit the ancient city of Petra?", answers: ["Jordan", "Egypt", "Syria", "Lebanon"], correct: 0 },
+    { question: "Which city is known for its canals and gondolas?", answers: ["Venice", "Amsterdam", "Paris", "Barcelona"], correct: 0 },
+    { question: "Which country is the birthplace of the Olympic Games?", answers: ["Greece", "Italy", "France", "Germany"], correct: 0 },
+    { question: "Which country has the most islands in the world?", answers: ["Sweden", "Canada", "USA", "Finland"], correct: 0 },
+    { question: "Which country has the largest population in the world?", answers: ["China", "India", "USA", "Russia"], correct: 0 },
+    { question: "Which country is known for the historic Machu Picchu site?", answers: ["Peru", "Mexico", "Brazil", "Chile"], correct: 0 },
+    { question: "Which US state is famous for its volcanoes and islands?", answers: ["Hawaii", "California", "Alaska", "Florida"], correct: 0 },
+    { question: "Which country is known for its Samurai and Shinto shrines?", answers: ["Japan", "Korea", "China", "Thailand"], correct: 0 },
+    { question: "Which island nation is famous for its tea plantations?", answers: ["Sri Lanka", "India", "Bangladesh", "Nepal"], correct: 0 },
+    { question: "Where is the Louvre Museum located?", answers: ["Paris", "London", "Berlin", "Rome"], correct: 0 },
+    { question: "Which mountain range is found in South America?", answers: ["Andes", "Himalayas", "Alps", "Rockies"], correct: 0 },
+    { question: "Which country is known for its sushi and cherry blossoms?", answers: ["Japan", "China", "Korea", "Vietnam"], correct: 0 },
+    { question: "Which African country has the largest wildlife reserve?", answers: ["Tanzania", "Kenya", "South Africa", "Botswana"], correct: 0 },
+    { question: "Which city is the capital of Italy?", answers: ["Rome", "Florence", "Milan", "Venice"], correct: 0 },
+    { question: "Where is the famous Christ the Redeemer statue located?", answers: ["Brazil", "Argentina", "Chile", "Mexico"], correct: 0 },
+    { question: "Which European city is famous for its canals and bikes?", answers: ["Amsterdam", "Copenhagen", "Brussels", "Barcelona"], correct: 0 }
+],
+Sports: [
+    { question: "Which country won the 2022 FIFA World Cup?", answers: ["Argentina", "France", "Brazil", "Germany"], correct: 0 },
+    { question: "Who is known as the King of Football?", answers: ["Pelé", "Cristiano Ronaldo", "Lionel Messi", "Diego Maradona"], correct: 2 },
+    { question: "Which country hosts the Wimbledon tennis tournament?", answers: ["United Kingdom", "USA", "Australia", "France"], correct: 0 },
+    { question: "What is the national sport of Japan?", answers: ["Sumo", "Karate", "Judo", "Baseball"], correct: 0 },
+    { question: "Which country is home to the famous Formula 1 driver Lewis Hamilton?", answers: ["United Kingdom", "Germany", "Spain", "Italy"], correct: 0 },
+    { question: "Who has won the most Olympic gold medals?", answers: ["Michael Phelps", "Usain Bolt", "Simone Biles", "Larisa Latynina"], correct: 0 },
+    { question: "In which city were the 2020 Summer Olympics held?", answers: ["Tokyo", "London", "Beijing", "Sydney"], correct: 0 },
+    { question: "Which basketball player is known as 'King James'?", answers: ["LeBron James", "Kobe Bryant", "Michael Jordan", "Shaquille O'Neal"], correct: 0 },
+    { question: "What is the name of the tennis Grand Slam held in New York?", answers: ["US Open", "Australian Open", "French Open", "Wimbledon"], correct: 0 },
+    { question: "Which country won the 2016 Rugby World Cup?", answers: ["New Zealand", "Australia", "England", "South Africa"], correct: 0 },
+    { question: "Which athlete has the most Olympic medals?", answers: ["Michael Phelps", "Larisa Latynina", "Usain Bolt", "Mark Spitz"], correct: 0 },
+    { question: "Which sport is known as the 'king of sports'?", answers: ["Football", "Basketball", "Tennis", "Cricket"], correct: 0 },
+    { question: "Who won the NBA MVP in 2023?", answers: ["Joel Embiid", "Nikola Jokić", "Giannis Antetokounmpo", "Luka Dončić"], correct: 0 },
+    { question: "Which country hosted the 2018 FIFA World Cup?", answers: ["Russia", "Brazil", "Germany", "South Africa"], correct: 0 },
+    { question: "Which sport is played at the Tour de France?", answers: ["Cycling", "Running", "Football", "Swimming"], correct: 0 },
+    { question: "Which American football team has the most Super Bowl wins?", answers: ["Pittsburgh Steelers", "New England Patriots", "Dallas Cowboys", "San Francisco 49ers"], correct: 0 },
+    { question: "What is the maximum weight for a sumo wrestler in Japan?", answers: ["No limit", "150 kg", "200 kg", "250 kg"], correct: 0 },
+    { question: "In which country did basketball originate?", answers: ["USA", "Canada", "Australia", "France"], correct: 0 },
+    { question: "What is the longest tennis match ever played?", answers: ["11 hours", "6 hours", "9 hours", "8 hours"], correct: 0 },
+    { question: "Which country is known for producing the most famous ice hockey players?", answers: ["Canada", "USA", "Russia", "Sweden"], correct: 0 },
+    { question: "Which sport uses a shuttlecock?", answers: ["Badminton", "Tennis", "Table Tennis", "Squash"], correct: 0 },
+    { question: "In which sport would you perform a slam dunk?", answers: ["Basketball", "Football", "Volleyball", "Baseball"], correct: 0 },
+    { question: "Who holds the record for the most goals in a single Premier League season?", answers: ["Mohamed Salah", "Alan Shearer", "Cristiano Ronaldo", "Harry Kane"], correct: 0 }
+],
+Technology: [
+    { question: "Which company developed the iPhone?", answers: ["Apple", "Samsung", "Microsoft", "Google"], correct: 0 },
+    { question: "Which programming language is known for its snake logo?", answers: ["Python", "Java", "Ruby", "C++"], correct: 0 },
+    { question: "What is the name of the first personal computer?", answers: ["Altair 8800", "IBM PC", "Apple I", "Macintosh"], correct: 2 },
+    { question: "Which company developed the first smartwatch?", answers: ["Samsung", "Apple", "Motorola", "Sony"], correct: 2 },
+    { question: "What does the term 'AI' stand for?", answers: ["Artificial Intelligence", "Augmented Interface", "Artificial Interface", "Applied Intelligence"], correct: 0 },
+    { question: "What is the name of the virtual assistant developed by Amazon?", answers: ["Alexa", "Siri", "Cortana", "Google Assistant"], correct: 0 },
+    { question: "Which company created the Android operating system?", answers: ["Google", "Apple", "Microsoft", "BlackBerry"], correct: 0 },
+    { question: "Which programming language is used for Android app development?", answers: ["Java", "Python", "Swift", "C#"], correct: 0 },
+    { question: "What is the name of Microsoft's cloud computing platform?", answers: ["Azure", "Google Cloud", "AWS", "iCloud"], correct: 0 },
+    { question: "What is the latest version of Windows OS?", answers: ["Windows 11", "Windows 10", "Windows 7", "Windows XP"], correct: 0 },
+    { question: "Which company developed the Oculus Rift?", answers: ["Facebook", "Google", "Sony", "HTC"], correct: 0 },
+    { question: "What technology powers cryptocurrency transactions?", answers: ["Blockchain", "AI", "3D Printing", "Cloud Computing"], correct: 0 },
+    { question: "Which company developed the PlayStation?", answers: ["Sony", "Microsoft", "Nintendo", "Sega"], correct: 0 },
+    { question: "What does 'HTML' stand for?", answers: ["HyperText Markup Language", "HighText Machine Language", "HyperText Modelling Language", "HyperTool Machine Language"], correct: 0 },
+    { question: "What does 'GPU' stand for?", answers: ["Graphics Processing Unit", "General Processing Unit", "Graphics Performance Unit", "General Purpose Unit"], correct: 0 },
+    { question: "Which company invented the first computer mouse?", answers: ["Xerox", "Apple", "Microsoft", "IBM"], correct: 0 },
+    { question: "Which social media platform was acquired by Facebook in 2014?", answers: ["Instagram", "WhatsApp", "Twitter", "Snapchat"], correct: 0 },
+    { question: "What is the name of the digital currency developed by Bitcoin?", answers: ["Bitcoin", "Ethereum", "Dogecoin", "Litecoin"], correct: 0 },
+    { question: "Which company produces the iPad?", answers: ["Apple", "Microsoft", "Samsung", "Google"], correct: 0 },
+    { question: "Which search engine is owned by Google?", answers: ["Google Search", "Bing", "Yahoo", "DuckDuckGo"], correct: 0 },
+    { question: "What is the name of Apple's mobile operating system?", answers: ["iOS", "Android", "Windows Phone", "BlackBerry OS"], correct: 0 }
+],
+Health: [
+    { question: "What is the most common blood type?", answers: ["O+", "A+", "B+", "AB+"], correct: 0 },
+    { question: "Which vitamin is known as the 'sunshine vitamin'?", answers: ["Vitamin D", "Vitamin C", "Vitamin A", "Vitamin E"], correct: 0 },
+    { question: "Which disease is caused by a deficiency in Vitamin C?", answers: ["Scurvy", "Rickets", "Anemia", "Beriberi"], correct: 0 },
+    { question: "Which organ is primarily responsible for filtering waste from the blood?", answers: ["Kidney", "Liver", "Lungs", "Heart"], correct: 0 },
+    { question: "What is the normal human body temperature in Celsius?", answers: ["37°C", "36°C", "38°C", "39°C"], correct: 0 },
+    { question: "Which type of cancer affects the skin?", answers: ["Melanoma", "Leukemia", "Lung Cancer", "Breast Cancer"], correct: 0 },
+    { question: "What is the term for high blood sugar?", answers: ["Hyperglycemia", "Hypoglycemia", "Hypertension", "Hyperlipidemia"], correct: 0 },
+    { question: "Which part of the brain controls balance and coordination?", answers: ["Cerebellum", "Cerebrum", "Medulla", "Hypothalamus"], correct: 0 },
+    { question: "Which mineral is most important for bone health?", answers: ["Calcium", "Iron", "Potassium", "Magnesium"], correct: 0 },
+    { question: "What is the primary function of red blood cells?", answers: ["Transport oxygen", "Fight infections", "Clot blood", "Carry hormones"], correct: 0 },
+    { question: "Which condition is known as the 'silent killer'?", answers: ["Hypertension", "Asthma", "Diabetes", "Arthritis"], correct: 0 },
+    { question: "Which disease is transmitted by mosquitoes?", answers: ["Malaria", "HIV/AIDS", "Tuberculosis", "Chickenpox"], correct: 0 },
+    { question: "What is the largest organ in the human body?", answers: ["Skin", "Liver", "Heart", "Lungs"], correct: 0 },
+    { question: "What type of fat is considered unhealthy?", answers: ["Trans fat", "Monounsaturated fat", "Polyunsaturated fat", "Saturated fat"], correct: 0 },
+    { question: "Which food is the best source of vitamin C?", answers: ["Oranges", "Bananas", "Carrots", "Spinach"], correct: 0 },
+    { question: "What is the condition where the bones become brittle and weak?", answers: ["Osteoporosis", "Arthritis", "Scurvy", "Rickets"], correct: 0 },
+    { question: "Which nutrient is most important for muscle growth?", answers: ["Protein", "Carbohydrates", "Fats", "Vitamins"], correct: 0 },
+    { question: "What is the condition characterized by the excessive growth of body hair?", answers: ["Hirsutism", "Alopecia", "Vitiligo", "Acromegaly"], correct: 0 },
+    { question: "What is the most common cause of heart disease?", answers: ["Atherosclerosis", "High blood pressure", "Stress", "Cholesterol"], correct: 0 },
+    { question: "Which blood type is considered the universal donor?", answers: ["O-", "A-", "B-", "AB+"], correct: 0 },
+    { question: "Which bacteria causes tuberculosis?", answers: ["Mycobacterium tuberculosis", "Escherichia coli", "Streptococcus pneumoniae", "Salmonella"], correct: 0 }
+],
+Entertainment: [
+    { question: "Who played Jack Dawson in the movie 'Titanic'?", answers: ["Leonardo DiCaprio", "Brad Pitt", "Johnny Depp", "Tom Hanks"], correct: 0 },
+    { question: "Which animated movie features a character named Simba?", answers: ["The Lion King", "Aladdin", "Frozen", "Toy Story"], correct: 0 },
+    { question: "Which superhero is known as 'The Dark Knight'?", answers: ["Batman", "Superman", "Spider-Man", "Iron Man"], correct: 0 },
+    { question: "Who is the creator of the Harry Potter series?", answers: ["J.K. Rowling", "George R.R. Martin", "J.R.R. Tolkien", "Suzanne Collins"], correct: 0 },
+    { question: "Which actor starred in the 'Pirates of the Caribbean' series?", answers: ["Johnny Depp", "Brad Pitt", "Will Smith", "Tom Cruise"], correct: 0 },
+    { question: "What is the name of the fictional wizarding school in Harry Potter?", answers: ["Hogwarts", "Beauxbatons", "Durmstrang", "Ilvermorny"], correct: 0 },
+    { question: "Which movie won the Academy Award for Best Picture in 2022?", answers: ["CODA", "The Power of the Dog", "Dune", "West Side Story"], correct: 0 },
+    { question: "Which famous singer is known as the 'Queen of Pop'?", answers: ["Madonna", "Beyoncé", "Lady Gaga", "Rihanna"], correct: 0 },
+    { question: "Which film franchise features a character named Darth Vader?", answers: ["Star Wars", "Star Trek", "The Matrix", "The Terminator"], correct: 0 },
+    { question: "What is the name of the fictional city in the movie 'The Dark Knight'?", answers: ["Gotham City", "Metropolis", "Wakanda", "Emerald City"], correct: 0 },
+    { question: "Which 2019 film features a character called 'The Joker'?", answers: ["Joker", "The Dark Knight", "Avengers: Endgame", "Deadpool"], correct: 0 },
+    { question: "Who played the role of 'Forrest Gump'?", answers: ["Tom Hanks", "Robert Downey Jr.", "Matt Damon", "Will Smith"], correct: 0 },
+    { question: "Which animated film features a character named Elsa?", answers: ["Frozen", "Coco", "Moana", "Zootopia"], correct: 0 },
+    { question: "Which film series is based on a book written by Suzanne Collins?", answers: ["The Hunger Games", "Twilight", "Divergent", "Maze Runner"], correct: 0 },
+    { question: "Who is known as the 'King of Rock and Roll'?", answers: ["Elvis Presley", "Chuck Berry", "Buddy Holly", "Jimi Hendrix"], correct: 0 },
+    { question: "Which music video became the first to reach one billion views on YouTube?", answers: ["Despacito", "Shape of You", "Gangnam Style", "Uptown Funk"], correct: 0 },
+    { question: "Which actor starred in the 'Matrix' franchise?", answers: ["Keanu Reeves", "Will Smith", "Tom Cruise", "Brad Pitt"], correct: 0 },
+    { question: "Which animated film features a fish named Nemo?", answers: ["Finding Nemo", "Toy Story", "Shrek", "Madagascar"], correct: 0 },
+    { question: "Which TV show features a character named Walter White?", answers: ["Breaking Bad", "The Sopranos", "Stranger Things", "Game of Thrones"], correct: 0 },
+    { question: "Who is known for the 'Moonwalk' dance move?", answers: ["Michael Jackson", "Usher", "Chris Brown", "Justin Timberlake"], correct: 0 }
+],
+Education: [
+    { question: "Who is considered the father of modern physics?", answers: ["Albert Einstein", "Isaac Newton", "Galileo Galilei", "Nikola Tesla"], correct: 0 },
+    { question: "What is the capital of France?", answers: ["Paris", "Berlin", "Rome", "Madrid"], correct: 0 },
+    { question: "What is the square root of 81?", answers: ["9", "8", "7", "10"], correct: 0 },
+    { question: "Who wrote 'Romeo and Juliet'?", answers: ["William Shakespeare", "Charles Dickens", "Jane Austen", "Mark Twain"], correct: 0 },
+    { question: "Which planet is known as the Red Planet?", answers: ["Mars", "Venus", "Jupiter", "Saturn"], correct: 0 },
+    { question: "What is the largest continent?", answers: ["Asia", "Africa", "Europe", "North America"], correct: 0 },
+    { question: "Who is the author of '1984'?", answers: ["George Orwell", "Aldous Huxley", "Ray Bradbury", "J.K. Rowling"], correct: 0 },
+    { question: "Which element has the chemical symbol 'O'?", answers: ["Oxygen", "Osmium", "Ozone", "Oxygene"], correct: 0 },
+    { question: "What is the main language spoken in Brazil?", answers: ["Portuguese", "Spanish", "English", "French"], correct: 0 },
+    { question: "What is the longest river in the world?", answers: ["Nile", "Amazon", "Yangtze", "Mississippi"], correct: 0 },
+    { question: "Which element is the most abundant in the Earth's crust?", answers: ["Oxygen", "Silicon", "Iron", "Aluminum"], correct: 0 },
+    { question: "In which country would you find the Great Barrier Reef?", answers: ["Australia", "United States", "South Africa", "India"], correct: 0 },
+    { question: "What is the capital of Japan?", answers: ["Tokyo", "Beijing", "Seoul", "Bangkok"], correct: 0 },
+    { question: "Who invented the telephone?", answers: ["Alexander Graham Bell", "Thomas Edison", "Nikola Tesla", "Marconi"], correct: 0 },
+    { question: "What is the primary function of the heart?", answers: ["Pump blood", "Filter waste", "Digest food", "Produce hormones"], correct: 0 },
+    { question: "What is the largest animal on Earth?", answers: ["Blue Whale", "Elephant", "Shark", "Giraffe"], correct: 0 },
+    { question: "Which continent is the Sahara Desert located in?", answers: ["Africa", "Asia", "South America", "Australia"], correct: 0 },
+    { question: "Who painted the Mona Lisa?", answers: ["Leonardo da Vinci", "Vincent van Gogh", "Pablo Picasso", "Michelangelo"], correct: 0 },
+    { question: "In which year did World War II end?", answers: ["1945", "1940", "1918", "1950"], correct: 0 },
+    { question: "What is the chemical formula for water?", answers: ["H2O", "CO2", "O2", "H2"], correct: 0 }
+],
+Science: [
+    { question: "What is the chemical symbol for gold?", answers: ["Au", "Ag", "Pb", "Fe"], correct: 0 },
+    { question: "What is the powerhouse of the cell?", answers: ["Mitochondria", "Nucleus", "Ribosomes", "Endoplasmic Reticulum"], correct: 0 },
+    { question: "What gas do plants absorb during photosynthesis?", answers: ["Carbon Dioxide", "Oxygen", "Nitrogen", "Hydrogen"], correct: 0 },
+    { question: "What is the atomic number of hydrogen?", answers: ["1", "2", "3", "4"], correct: 0 },
+    { question: "Who is known as the father of modern chemistry?", answers: ["Antoine Lavoisier", "Marie Curie", "Dmitri Mendeleev", "Isaac Newton"], correct: 0 },
+    { question: "What is the unit of electric current?", answers: ["Ampere", "Volt", "Watt", "Ohm"], correct: 0 },
+    { question: "Which planet is closest to the Sun?", answers: ["Mercury", "Venus", "Earth", "Mars"], correct: 0 },
+    { question: "Which process do plants use to make their own food?", answers: ["Photosynthesis", "Respiration", "Digestion", "Fermentation"], correct: 0 },
+    { question: "Which of the following is a noble gas?", answers: ["Helium", "Oxygen", "Nitrogen", "Carbon"], correct: 0 },
+    { question: "Which is the chemical symbol for water?", answers: ["H2O", "CO2", "O2", "H2"], correct: 0 },
+    { question: "What is the most common element in the universe?", answers: ["Hydrogen", "Oxygen", "Carbon", "Nitrogen"], correct: 0 },
+    { question: "Which organ in the human body regulates blood sugar?", answers: ["Pancreas", "Liver", "Heart", "Kidney"], correct: 0 },
+    { question: "What force keeps the planets in orbit around the Sun?", answers: ["Gravity", "Magnetism", "Electromagnetism", "Friction"], correct: 0 },
+    { question: "What is the main ingredient in glass?", answers: ["Silica", "Iron", "Calcium", "Sodium"], correct: 0 },
+    { question: "Who is credited with the theory of evolution?", answers: ["Charles Darwin", "Albert Einstein", "Isaac Newton", "Galileo Galilei"], correct: 0 },
+    { question: "What is the largest organ in the human body?", answers: ["Skin", "Liver", "Heart", "Lungs"], correct: 0 },
+    { question: "What element is used in the production of nuclear power?", answers: ["Uranium", "Plutonium", "Thorium", "Radon"], correct: 0 },
+    { question: "What is the speed of light in a vacuum?", answers: ["299,792,458 meters per second", "150,000 km/h", "300,000 m/s", "3 million km/s"], correct: 0 },
+    { question: "Which branch of science is concerned with the study of living organisms?", answers: ["Biology", "Chemistry", "Physics", "Astronomy"], correct: 0 }
+],
+History: [
+    { question: "Who was the first president of the United States?", answers: ["George Washington", "Abraham Lincoln", "Thomas Jefferson", "John Adams"], correct: 0 },
+    { question: "In which year did World War I begin?", answers: ["1914", "1912", "1939", "1945"], correct: 0 },
+    { question: "Who discovered America?", answers: ["Christopher Columbus", "Leif Erikson", "Marco Polo", "Vasco da Gama"], correct: 0 },
+    { question: "Which empire was ruled by Julius Caesar?", answers: ["Roman Empire", "Ottoman Empire", "British Empire", "Mongol Empire"], correct: 0 },
+    { question: "What year did the Titanic sink?", answers: ["1912", "1920", "1900", "1898"], correct: 0 },
+    { question: "Who was the leader of the Soviet Union during World War II?", answers: ["Joseph Stalin", "Vladimir Lenin", "Leon Trotsky", "Nikita Khrushchev"], correct: 0 },
+    { question: "Which country was the first to land a man on the Moon?", answers: ["United States", "Soviet Union", "China", "India"], correct: 0 },
+    { question: "Who was the first emperor of China?", answers: ["Qin Shi Huang", "Kublai Khan", "Mao Zedong", "Sun Yat-sen"], correct: 0 },
+    { question: "Who was the famous queen of ancient Egypt?", answers: ["Cleopatra", "Nefertiti", "Hatshepsut", "Queen Victoria"], correct: 0 },
+    { question: "Which war was fought between the North and South regions of the United States?", answers: ["American Civil War", "World War I", "Spanish-American War", "Revolutionary War"], correct: 0 },
+    { question: "In which year did the Berlin Wall fall?", answers: ["1989", "1961", "1975", "1991"], correct: 0 },
+    { question: "Which ancient civilization built the pyramids of Giza?", answers: ["Egyptians", "Mayans", "Romans", "Greeks"], correct: 0 },
+    { question: "Who was the first man to walk on the moon?", answers: ["Neil Armstrong", "Yuri Gagarin", "Buzz Aldrin", "Michael Collins"], correct: 0 },
+    { question: "Which country did the United States fight in the War of Independence?", answers: ["Great Britain", "France", "Spain", "Germany"], correct: 0 },
+    { question: "What year did World War II end?", answers: ["1945", "1941", "1939", "1950"], correct: 0 },
+    { question: "Who was the famous leader of the Mongol Empire?", answers: ["Genghis Khan", "Kublai Khan", "Tamerlane", "Attila the Hun"], correct: 0 },
+    { question: "Who was the first woman to fly solo across the Atlantic?", answers: ["Amelia Earhart", "Bessie Coleman", "Harriet Quimby", "Jacqueline Cochran"], correct: 0 },
+    { question: "Which year did the French Revolution start?", answers: ["1789", "1799", "1801", "1776"], correct: 0 },
+    { question: "Which country was ruled by the Pharaohs?", answers: ["Egypt", "Greece", "Rome", "Persia"], correct: 0 },
+    { question: "Who was the last Tsar of Russia?", answers: ["Nicholas II", "Peter the Great", "Ivan the Terrible", "Alexander III"], correct: 0 },
+    { question: "Which war occurred between the years 1914 to 1918?", answers: ["World War I", "World War II", "Vietnam War", "Korean War"], correct: 0 }
+],
+Geography: [
+    { question: "Which is the longest river in the world?", answers: ["Amazon", "Nile", "Yangtze", "Mississippi"], correct: 0 },
+    { question: "What is the capital city of Australia?", answers: ["Canberra", "Sydney", "Melbourne", "Brisbane"], correct: 0 },
+    { question: "Which country has the most islands?", answers: ["Sweden", "Canada", "Indonesia", "Philippines"], correct: 0 },
+    { question: "Which mountain is the highest in the world?", answers: ["Mount Everest", "K2", "Kangchenjunga", "Mount Kilimanjaro"], correct: 0 },
+    { question: "Which is the largest country in the world by area?", answers: ["Russia", "Canada", "China", "United States"], correct: 0 },
+    { question: "What is the capital city of Canada?", answers: ["Ottawa", "Toronto", "Vancouver", "Montreal"], correct: 0 },
+    { question: "Which desert is the largest in the world?", answers: ["Sahara", "Gobi", "Kalahari", "Atacama"], correct: 0 },
+    { question: "What is the smallest country in the world?", answers: ["Vatican City", "Monaco", "Nauru", "San Marino"], correct: 0 },
+    { question: "Which ocean is the largest?", answers: ["Pacific Ocean", "Atlantic Ocean", "Indian Ocean", "Southern Ocean"], correct: 0 },
+    { question: "Which country is known as the Land of the Rising Sun?", answers: ["Japan", "China", "South Korea", "Thailand"], correct: 0 },
+    { question: "Which continent is the Sahara Desert located in?", answers: ["Africa", "Asia", "North America", "Australia"], correct: 0 },
+    { question: "What is the capital of Brazil?", answers: ["Brasília", "Rio de Janeiro", "São Paulo", "Buenos Aires"], correct: 0 },
+    { question: "Which country has the most time zones?", answers: ["Russia", "United States", "Canada", "China"], correct: 0 },
+    { question: "What is the longest mountain range in the world?", answers: ["Andes", "Himalayas", "Rockies", "Alps"], correct: 0 },
+    { question: "Which country is home to the Great Barrier Reef?", answers: ["Australia", "United States", "Brazil", "Mexico"], correct: 0 },
+    { question: "What is the capital of France?", answers: ["Paris", "Rome", "Berlin", "Madrid"], correct: 0 },
+    { question: "Which is the largest island in the world?", answers: ["Greenland", "New Guinea", "Borneo", "Madagascar"], correct: 0 },
+    { question: "Which country is known for having the most active volcanoes?", answers: ["Indonesia", "Japan", "Hawaii", "Iceland"], correct: 0 },
+    { question: "Which river flows through Egypt?", answers: ["Nile", "Amazon", "Ganges", "Mississippi"], correct: 0 },
+    { question: "What is the tallest waterfall in the world?", answers: ["Angel Falls", "Niagara Falls", "Victoria Falls", "Iguazu Falls"], correct: 0 }
+],
+Literature: [
+    { question: "Who wrote 'Pride and Prejudice'?", answers: ["Jane Austen", "Charles Dickens", "William Shakespeare", "George Orwell"], correct: 0 },
+    { question: "Which novel begins with the line 'Call me Ishmael'?", answers: ["Moby-Dick", "The Great Gatsby", "1984", "To Kill a Mockingbird"], correct: 0 },
+    { question: "Who wrote 'The Catcher in the Rye'?", answers: ["J.D. Salinger", "F. Scott Fitzgerald", "Mark Twain", "Ernest Hemingway"], correct: 0 },
+    { question: "Who wrote the 'Harry Potter' series?", answers: ["J.K. Rowling", "J.R.R. Tolkien", "C.S. Lewis", "Suzanne Collins"], correct: 0 },
+    { question: "What is the title of the first book in 'The Lord of the Rings' trilogy?", answers: ["The Fellowship of the Ring", "The Two Towers", "The Return of the King", "The Hobbit"], correct: 0 },
+    { question: "Which book is known for the phrase 'Big Brother is watching you'?", answers: ["1984", "Brave New World", "Fahrenheit 451", "The Handmaid's Tale"], correct: 0 },
+    { question: "Who wrote 'Don Quixote'?", answers: ["Miguel de Cervantes", "Gabriel García Márquez", "Pablo Neruda", "Federico García Lorca"], correct: 0 },
+    { question: "Which novel tells the story of a whale named Moby Dick?", answers: ["Moby-Dick", "The Old Man and the Sea", "Moby", "Treasure Island"], correct: 0 },
+    { question: "Which author created the character Sherlock Holmes?", answers: ["Arthur Conan Doyle", "Agatha Christie", "Dashiell Hammett", "Raymond Chandler"], correct: 0 },
+    { question: "Who wrote 'The Great Gatsby'?", answers: ["F. Scott Fitzgerald", "Ernest Hemingway", "William Faulkner", "John Steinbeck"], correct: 0 },
+    { question: "What is the title of the novel by George Orwell about a dystopian society?", answers: ["1984", "Animal Farm", "Brave New World", "Fahrenheit 451"], correct: 0 },
+    { question: "Who is the author of 'To Kill a Mockingbird'?", answers: ["Harper Lee", "Mark Twain", "John Steinbeck", "Toni Morrison"], correct: 0 },
+    { question: "Which author wrote 'The Chronicles of Narnia' series?", answers: ["C.S. Lewis", "J.K. Rowling", "J.R.R. Tolkien", "Philip Pullman"], correct: 0 },
+    { question: "Who wrote 'The Hunger Games' trilogy?", answers: ["Suzanne Collins", "Veronica Roth", "Stephenie Meyer", "J.K. Rowling"], correct: 0 },
+    { question: "Who wrote 'The Odyssey'?", answers: ["Homer", "Virgil", "Sophocles", "Aristotle"], correct: 0 },
+    { question: "Which author wrote 'The Divine Comedy'?", answers: ["Dante Alighieri", "John Milton", "Geoffrey Chaucer", "Homer"], correct: 0 },
+    { question: "Which famous novel starts with the line 'It was the best of times, it was the worst of times'?", answers: ["A Tale of Two Cities", "Les Misérables", "The Great Gatsby", "War and Peace"], correct: 0 },
+    { question: "Who wrote 'The Lord of the Flies'?", answers: ["William Golding", "Lord Byron", "George Orwell", "Daphne du Maurier"], correct: 0 },
+    { question: "Which author is known for the 'A Song of Ice and Fire' series?", answers: ["George R.R. Martin", "J.R.R. Tolkien", "J.K. Rowling", "C.S. Lewis"], correct: 0 },
+    { question: "Who wrote 'Frankenstein'?", answers: ["Mary Shelley", "Bram Stoker", "H.G. Wells", "Edgar Allan Poe"], correct: 0 }
+],
+Art: [
+    { question: "Who painted the Mona Lisa?", answers: ["Leonardo da Vinci", "Vincent van Gogh", "Pablo Picasso", "Claude Monet"], correct: 0 },
+    { question: "Which artist is known for his 'Starry Night' painting?", answers: ["Vincent van Gogh", "Pablo Picasso", "Claude Monet", "Leonardo da Vinci"], correct: 0 },
+    { question: "What style of art is Pablo Picasso associated with?", answers: ["Cubism", "Impressionism", "Surrealism", "Renaissance"], correct: 0 },
+    { question: "Which artist is famous for the sculpture 'David'?", answers: ["Michelangelo", "Donatello", "Leonardo da Vinci", "Raphael"], correct: 0 },
+    { question: "Who is known as the father of modern abstract art?", answers: ["Wassily Kandinsky", "Pablo Picasso", "Claude Monet", "Jackson Pollock"], correct: 0 },
+    { question: "Which artist painted the Sistine Chapel ceiling?", answers: ["Michelangelo", "Raphael", "Leonardo da Vinci", "Caravaggio"], correct: 0 },
+    { question: "In which city can you find the Louvre Museum?", answers: ["Paris", "Rome", "London", "New York"], correct: 0 },
+    { question: "Who painted 'The Persistence of Memory'?", answers: ["Salvador Dalí", "René Magritte", "Frida Kahlo", "Jackson Pollock"], correct: 0 },
+    { question: "What is the name of the art movement associated with the works of Claude Monet?", answers: ["Impressionism", "Expressionism", "Surrealism", "Realism"], correct: 0 },
+    { question: "Which artist is known for the painting 'Guernica'?", answers: ["Pablo Picasso", "Salvador Dalí", "Claude Monet", "Henri Matisse"], correct: 0 },
+    { question: "Which painting did Edvard Munch create?", answers: ["The Scream", "The Persistence of Memory", "Starry Night", "The Last Supper"], correct: 0 },
+    { question: "Who is known for creating the 'Campbell's Soup Cans' artwork?", answers: ["Andy Warhol", "Roy Lichtenstein", "Jasper Johns", "Keith Haring"], correct: 0 },
+    { question: "What type of art is Jackson Pollock best known for?", answers: ["Abstract Expressionism", "Pop Art", "Cubism", "Surrealism"], correct: 0 },
+    { question: "Which artist is known for his work 'Water Lilies'?", answers: ["Claude Monet", "Vincent van Gogh", "Pablo Picasso", "Salvador Dalí"], correct: 0 },
+    { question: "Who painted the 'Girl with a Pearl Earring'?", answers: ["Johannes Vermeer", "Rembrandt", "Claude Monet", "Leonardo da Vinci"], correct: 0 },
+    { question: "Which art movement did Salvador Dalí belong to?", answers: ["Surrealism", "Cubism", "Expressionism", "Impressionism"], correct: 0 },
+    { question: "Which artist painted the 'School of Athens'?", answers: ["Raphael", "Michelangelo", "Leonardo da Vinci", "Caravaggio"], correct: 0 },
+    { question: "Who sculpted 'The Thinker'?", answers: ["Auguste Rodin", "Michelangelo", "Donatello", "Gian Lorenzo Bernini"], correct: 0 },
+    { question: "Which artist is associated with the art movement 'Fauvism'?", answers: ["Henri Matisse", "Claude Monet", "Pablo Picasso", "Jackson Pollock"], correct: 0 },
+    { question: "Who painted the 'Night Watch'?", answers: ["Rembrandt", "Johannes Vermeer", "Claude Monet", "Vincent van Gogh"], correct: 0 }
+],
+Music: [
+    { question: "Who is known as the King of Pop?", answers: ["Michael Jackson", "Elvis Presley", "Prince", "Madonna"], correct: 0 },
+    { question: "Which band is known for the hit song 'Bohemian Rhapsody'?", answers: ["Queen", "The Beatles", "Led Zeppelin", "Pink Floyd"], correct: 0 },
+    { question: "Who composed the famous symphony 'Beethoven's 9th Symphony'?", answers: ["Ludwig van Beethoven", "Wolfgang Amadeus Mozart", "Johann Sebastian Bach", "Frédéric Chopin"], correct: 0 },
+    { question: "Which singer is known for the hit song 'Rolling in the Deep'?", answers: ["Adele", "Beyoncé", "Rihanna", "Lady Gaga"], correct: 0 },
+    { question: "Which classical composer is known for his 'Four Seasons'?", answers: ["Antonio Vivaldi", "Johann Sebastian Bach", "Ludwig van Beethoven", "Wolfgang Amadeus Mozart"], correct: 0 },
+    { question: "Which music genre is Taylor Swift primarily known for?", answers: ["Country", "Pop", "Rock", "Blues"], correct: 0 },
+    { question: "Who is famous for the hit song 'I Will Always Love You'?", answers: ["Whitney Houston", "Mariah Carey", "Celine Dion", "Ariana Grande"], correct: 0 },
+    { question: "Which band released the album 'Dark Side of the Moon'?", answers: ["Pink Floyd", "The Beatles", "Led Zeppelin", "The Rolling Stones"], correct: 0 },
+    { question: "Who is known for the song 'Like a Rolling Stone'?", answers: ["Bob Dylan", "Bruce Springsteen", "Johnny Cash", "Jimi Hendrix"], correct: 0 },
+    { question: "Which music artist was known as the 'Queen of Soul'?", answers: ["Aretha Franklin", "Beyoncé", "Whitney Houston", "Etta James"], correct: 0 },
+    { question: "Which band is known for the hit song 'Yesterday'?", answers: ["The Beatles", "The Rolling Stones", "Queen", "U2"], correct: 0 },
+    { question: "Who is the famous composer of 'The Nutcracker Suite'?", answers: ["Pyotr Ilyich Tchaikovsky", "Ludwig van Beethoven", "Johann Strauss", "George Frideric Handel"], correct: 0 },
+    { question: "Which famous artist is known for 'Purple Rain'?", answers: ["Prince", "Michael Jackson", "David Bowie", "Freddie Mercury"], correct: 0 },
+    { question: "Which band is known for the song 'Smells Like Teen Spirit'?", answers: ["Nirvana", "Pearl Jam", "Alice in Chains", "Soundgarden"], correct: 0 },
+    { question: "Who is the creator of the song 'Bad Guy'?", answers: ["Billie Eilish", "Ariana Grande", "Ed Sheeran", "Drake"], correct: 0 },
+    { question: "Which song is considered the anthem of the 'Summer of Love'?", answers: ["San Francisco (Be Sure to Wear Flowers in Your Hair)", "Imagine", "Blowin' in the Wind", "Good Vibrations"], correct: 0 },
+    { question: "Which artist is known for the song 'Shape of You'?", answers: ["Ed Sheeran", "Justin Bieber", "Ariana Grande", "Bruno Mars"], correct: 0 },
+    { question: "Which band released 'Hotel California'?", answers: ["The Eagles", "The Rolling Stones", "The Beatles", "Pink Floyd"], correct: 0 }
+],
+Politics: [
+    { question: "Who is the first female Prime Minister of the United Kingdom?", answers: ["Margaret Thatcher", "Theresa May", "Queen Elizabeth II", "Emmeline Pankhurst"], correct: 0 },
+    { question: "Who was the 16th president of the United States?", answers: ["Abraham Lincoln", "George Washington", "Thomas Jefferson", "Andrew Johnson"], correct: 0 },
+    { question: "Which country was the first to grant women the right to vote?", answers: ["New Zealand", "United States", "United Kingdom", "Australia"], correct: 0 },
+    { question: "Who was the leader of the Soviet Union during World War II?", answers: ["Joseph Stalin", "Vladimir Lenin", "Mikhail Gorbachev", "Leon Trotsky"], correct: 0 },
+    { question: "Who was the first African-American president of the United States?", answers: ["Barack Obama", "George Washington", "Abraham Lincoln", "Bill Clinton"], correct: 0 },
+    { question: "Who is known for the 'New Deal' program?", answers: ["Franklin D. Roosevelt", "Herbert Hoover", "Harry S. Truman", "Woodrow Wilson"], correct: 0 },
+    { question: "What is the political ideology that advocates for the means of production to be owned and controlled by the state?", answers: ["Communism", "Socialism", "Capitalism", "Fascism"], correct: 0 },
+    { question: "Who is the current president of China?", answers: ["Xi Jinping", "Hu Jintao", "Mao Zedong", "Zhao Ziyang"], correct: 0 },
+    { question: "Which country did the United States fight in the War of Independence?", answers: ["Great Britain", "France", "Spain", "Russia"], correct: 0 },
+    { question: "Who wrote the Communist Manifesto?", answers: ["Karl Marx", "Friedrich Engels", "Vladimir Lenin", "Leon Trotsky"], correct: 0 },
+    { question: "Who was the longest-serving U.S. president?", answers: ["Franklin D. Roosevelt", "George Washington", "Abraham Lincoln", "Thomas Jefferson"], correct: 0 },
+    { question: "Which political party is currently in power in the United States?", answers: ["Republican Party", "Democratic Party", "Libertarian Party", "Green Party"], correct: 0 },
+    { question: "What is the highest legislative body in the United States?", answers: ["Congress", "Senate", "House of Representatives", "Supreme Court"], correct: 0 },
+    { question: "Which country has a monarchy with Queen Elizabeth II as the head of state?", answers: ["United Kingdom", "Denmark", "Sweden", "Netherlands"], correct: 0 },
+    { question: "Which famous political leader was imprisoned on Robben Island?", answers: ["Nelson Mandela", "Desmond Tutu", "F.W. de Klerk", "Mahatma Gandhi"], correct: 0 },
+    { question: "Who is known as the Father of the Nation in India?", answers: ["Mahatma Gandhi", "Jawaharlal Nehru", "Sardar Vallabhbhai Patel", "Indira Gandhi"], correct: 0 },
+    { question: "What event led to the collapse of the Soviet Union?", answers: ["The Cold War", "World War II", "The Cuban Missile Crisis", "The Fall of the Berlin Wall"], correct: 0 },
+    { question: "Which U.S. president delivered the Gettysburg Address?", answers: ["Abraham Lincoln", "George Washington", "Theodore Roosevelt", "Franklin D. Roosevelt"], correct: 0 },
+    { question: "Which country was led by dictator Adolf Hitler?", answers: ["Germany", "Italy", "Japan", "France"], correct: 0 }
+],
+Business: [
+    { question: "Who is the CEO of Tesla?", answers: ["Elon Musk", "Jeff Bezos", "Bill Gates", "Larry Page"], correct: 0 },
+    { question: "Which company is known for the iPhone?", answers: ["Apple", "Samsung", "Google", "Microsoft"], correct: 0 },
+    { question: "Who founded Amazon?", answers: ["Jeff Bezos", "Bill Gates", "Mark Zuckerberg", "Larry Page"], correct: 0 },
+    { question: "Which company is the largest retailer in the world?", answers: ["Walmart", "Amazon", "Target", "Costco"], correct: 0 },
+    { question: "Which social media platform is owned by Mark Zuckerberg?", answers: ["Facebook", "Twitter", "Instagram", "Snapchat"], correct: 0 },
+    { question: "Who is the founder of Microsoft?", answers: ["Bill Gates", "Steve Jobs", "Mark Zuckerberg", "Larry Page"], correct: 0 },
+    { question: "Which company is known for its search engine?", answers: ["Google", "Bing", "Yahoo", "DuckDuckGo"], correct: 0 },
+    { question: "Which company created the Windows operating system?", answers: ["Microsoft", "Apple", "IBM", "Google"], correct: 0 },
+    { question: "Which company is famous for its electric cars?", answers: ["Tesla", "Ford", "Chevrolet", "BMW"], correct: 0 },
+    { question: "Which company was founded by Steve Jobs, Steve Wozniak, and Ronald Wayne?", answers: ["Apple", "Microsoft", "Google", "Amazon"], correct: 0 },
+    { question: "Which company is the largest software company by revenue?", answers: ["Microsoft", "Oracle", "Apple", "Google"], correct: 0 },
+    { question: "Which retail giant is headquartered in Bentonville, Arkansas?", answers: ["Walmart", "Target", "Kroger", "Home Depot"], correct: 0 },
+    { question: "Which online payment service is owned by PayPal?", answers: ["Venmo", "Stripe", "Square", "Zelle"], correct: 0 },
+    { question: "Which company was acquired by Google in 2006?", answers: ["YouTube", "Waze", "Android", "Nest"], correct: 0 },
+    { question: "Which company owns LinkedIn?", answers: ["Microsoft", "Facebook", "Google", "Amazon"], correct: 0 },
+    { question: "Which company is the parent company of Instagram?", answers: ["Facebook", "Google", "Snapchat", "Twitter"], correct: 0 },
+    { question: "Which e-commerce company started as an online bookstore?", answers: ["Amazon", "eBay", "Alibaba", "Walmart"], correct: 0 },
+    { question: "Which company is known for creating the PlayStation gaming console?", answers: ["Sony", "Microsoft", "Nintendo", "Apple"], correct: 0 }
+],
+Nature: [
+    { question: "What is the tallest tree species in the world?", answers: ["Coast Redwood", "Douglas Fir", "Sequoia", "Oak"], correct: 0 },
+    { question: "Which animal is known for its black and white stripes?", answers: ["Zebra", "Tiger", "Lion", "Giraffe"], correct: 0 },
+    { question: "What is the largest land animal?", answers: ["African Elephant", "White Rhino", "Giraffe", "Hippopotamus"], correct: 0 },
+    { question: "Which bird is known for its ability to mimic human speech?", answers: ["Parrot", "Crow", "Sparrow", "Pigeon"], correct: 0 },
+    { question: "What is the largest ocean on Earth?", answers: ["Pacific Ocean", "Atlantic Ocean", "Indian Ocean", "Arctic Ocean"], correct: 0 },
+    { question: "What is the tallest mountain on Earth?", answers: ["Mount Everest", "K2", "Mount Kilimanjaro", "Mount Fuji"], correct: 0 },
+    { question: "Which planet is known as the Red Planet?", answers: ["Mars", "Venus", "Jupiter", "Saturn"], correct: 0 },
+    { question: "What is the largest living organism on Earth?", answers: ["Armillaria fungus", "Blue Whale", "Redwood Tree", "Great Barrier Reef"], correct: 0 },
+    { question: "Which animal is known to be the fastest land animal?", answers: ["Cheetah", "Lion", "Leopard", "Tiger"], correct: 0 },
+    { question: "What is the largest desert in the world?", answers: ["Sahara", "Arabian", "Kalahari", "Gobi"], correct: 0 },
+    { question: "Which bird is known for its long migration across the globe?", answers: ["Arctic Tern", "Eagle", "Ostrich", "Penguin"], correct: 0 },
+    { question: "Which is the smallest mammal in the world?", answers: ["Bumblebee Bat", "Pygmy Shrew", "Kitti's Hog-nosed Bat", "Etruscan Shrew"], correct: 0 },
+    { question: "What is the largest species of shark?", answers: ["Whale Shark", "Great White Shark", "Hammerhead Shark", "Bull Shark"], correct: 0 },
+    { question: "Which tree produces acorns?", answers: ["Oak", "Pine", "Maple", "Cedar"], correct: 0 },
+    { question: "Which is the longest river in the world?", answers: ["Nile", "Amazon", "Yangtze", "Mississippi"], correct: 0 },
+    { question: "Which insect is known for its ability to produce honey?", answers: ["Bee", "Ant", "Ladybug", "Dragonfly"], correct: 0 },
+    { question: "Which is the largest island in the world?", answers: ["Greenland", "New Guinea", "Borneo", "Madagascar"], correct: 0 },
+    { question: "Which animal is known for its ability to change color?", answers: ["Chameleon", "Octopus", "Squid", "Cuttlefish"], correct: 0 }
+],
+Animals: [
+    { question: "What is the largest mammal in the world?", answers: ["Blue Whale", "African Elephant", "Giraffe", "Hippopotamus"], correct: 0 },
+    { question: "Which animal is known for its long neck?", answers: ["Giraffe", "Elephant", "Camel", "Horse"], correct: 0 },
+    { question: "Which animal is the fastest on land?", answers: ["Cheetah", "Lion", "Horse", "Antelope"], correct: 0 },
+    { question: "Which animal is known for its distinctive black and white coloring?", answers: ["Panda", "Penguin", "Zebra", "Skunk"], correct: 0 },
+    { question: "Which animal is known for its ability to fly?", answers: ["Bat", "Bird", "Flying Squirrel", "Butterfly"], correct: 0 },
+    { question: "Which animal has the longest lifespan?", answers: ["Galápagos Tortoise", "Elephant", "Blue Whale", "Human"], correct: 0 },
+    { question: "What is the largest species of shark?", answers: ["Whale Shark", "Great White Shark", "Hammerhead Shark", "Bull Shark"], correct: 0 },
+    { question: "Which animal is known for being able to regenerate lost body parts?", answers: ["Axolotl", "Starfish", "Lizard", "Octopus"], correct: 0 },
+    { question: "What is the largest species of penguin?", answers: ["Emperor Penguin", "King Penguin", "Adélie Penguin", "Gentoo Penguin"], correct: 0 },
+    { question: "Which animal is known for its sharp quills?", answers: ["Porcupine", "Hedgehog", "Echidna", "Armadillo"], correct: 0 },
+    { question: "What animal is known for building dams?", answers: ["Beaver", "Otter", "Muskrat", "Mole"], correct: 0 },
+    { question: "Which animal is the largest cat species?", answers: ["Siberian Tiger", "Lion", "Leopard", "Cheetah"], correct: 0 },
+    { question: "Which animal is known for its ability to mimic human speech?", answers: ["Parrot", "Crow", "Dolphin", "Elephant"], correct: 0 },
+    { question: "Which bird is known for its long migrations?", answers: ["Arctic Tern", "Eagle", "Penguin", "Seagull"], correct: 0 },
+    { question: "Which insect is known for its ability to produce honey?", answers: ["Bee", "Ant", "Ladybug", "Dragonfly"], correct: 0 },
+    { question: "What animal is known for its ability to change color?", answers: ["Chameleon", "Octopus", "Squid", "Cuttlefish"], correct: 0 },
+    { question: "Which animal is the largest land mammal?", answers: ["African Elephant", "Rhino", "Hippo", "Giraffe"], correct: 0 }
+],
+Mathematics: [
+    { question: "What is the value of Pi to two decimal places?", answers: ["3.14", "3.16", "3.12", "3.20"], correct: 0 },
+    { question: "What is the square root of 64?", answers: ["8", "6", "7", "9"], correct: 0 },
+    { question: "What is 7 × 9?", answers: ["63", "56", "72", "49"], correct: 0 },
+    { question: "Which number is known as a 'prime number'?", answers: ["7", "9", "12", "15"], correct: 0 },
+    { question: "What is the sum of the angles in a triangle?", answers: ["180°", "360°", "90°", "270°"], correct: 0 },
+    { question: "What is the value of √81?", answers: ["9", "8", "10", "7"], correct: 0 },
+    { question: "Which is the largest prime number under 20?", answers: ["19", "17", "13", "11"], correct: 0 },
+    { question: "What is the formula for the area of a circle?", answers: ["πr²", "2πr", "πd", "πr"], correct: 0 },
+    { question: "What is 144 ÷ 12?", answers: ["12", "10", "14", "16"], correct: 0 },
+    { question: "What is the value of 3³?", answers: ["27", "9", "18", "12"], correct: 0 },
+    { question: "What is the sum of 6 + 8?", answers: ["14", "15", "13", "16"], correct: 0 },
+    { question: "What is the Pythagorean theorem?", answers: ["a² + b² = c²", "a + b = c", "a - b = c", "a² - b² = c²"], correct: 0 },
+    { question: "What is the value of 25 ÷ 5?", answers: ["5", "6", "7", "4"], correct: 0 },
+    { question: "What is the next prime number after 17?", answers: ["19", "21", "20", "18"], correct: 0 },
+    { question: "Which of the following is a perfect square?", answers: ["49", "50", "51", "52"], correct: 0 },
+    { question: "What is the value of 100 ÷ 10?", answers: ["10", "9", "8", "12"], correct: 0 }
+],
+Space: [
+    { question: "Which planet is closest to the Sun?", answers: ["Mercury", "Venus", "Earth", "Mars"], correct: 0 },
+    { question: "What is the name of our galaxy?", answers: ["Milky Way", "Andromeda", "Sombrero", "Whirlpool"], correct: 0 },
+    { question: "Which planet is known as the Red Planet?", answers: ["Mars", "Venus", "Jupiter", "Saturn"], correct: 0 },
+    { question: "What is the name of the first artificial satellite launched by the Soviet Union?", answers: ["Sputnik 1", "Apollo 11", "Hubble", "Vostok 1"], correct: 0 },
+    { question: "Who was the first person to walk on the moon?", answers: ["Neil Armstrong", "Buzz Aldrin", "Yuri Gagarin", "Michael Collins"], correct: 0 },
+    { question: "What is the largest planet in our solar system?", answers: ["Jupiter", "Saturn", "Earth", "Mars"], correct: 0 },
+    { question: "Which planet has the most moons?", answers: ["Jupiter", "Saturn", "Uranus", "Neptune"], correct: 0 },
+    { question: "What is the name of NASA’s rover currently exploring Mars?", answers: ["Perseverance", "Curiosity", "Opportunity", "Spirit"], correct: 0 },
+    { question: "Which planet is known for its beautiful rings?", answers: ["Saturn", "Uranus", "Neptune", "Jupiter"], correct: 0 },
+    { question: "What is the largest moon of Saturn?", answers: ["Titan", "Ganymede", "Callisto", "Europa"], correct: 0 },
+    { question: "Which astronaut was the first to orbit the Earth?", answers: ["Yuri Gagarin", "Neil Armstrong", "Buzz Aldrin", "John Glenn"], correct: 0 },
+    { question: "Which is the hottest planet in our solar system?", answers: ["Venus", "Mercury", "Earth", "Mars"], correct: 0 },
+    { question: "What is the name of NASA's space telescope?", answers: ["Hubble", "James Webb", "Spitzer", "Kepler"], correct: 0 },
+    { question: "Which dwarf planet was once considered the ninth planet?", answers: ["Pluto", "Eris", "Haumea", "Makemake"], correct: 0 },
+    { question: "What is the name of the first human-made object to leave the solar system?", answers: ["Voyager 1", "Pioneer 10", "Voyager 2", "New Horizons"], correct: 0 },
+    { question: "What is the force that keeps planets in orbit around the sun?", answers: ["Gravity", "Magnetism", "Inertia", "Electromagnetic"], correct: 0 }
+],
+Philosophy: [
+    { question: "Who is known as the father of Western philosophy?", answers: ["Socrates", "Plato", "Aristotle", "Descartes"], correct: 0 },
+    { question: "What is the name of the philosophy that emphasizes the importance of individual freedom?", answers: ["Existentialism", "Utilitarianism", "Absurdism", "Nihilism"], correct: 0 },
+    { question: "Which philosopher wrote 'The Republic'?", answers: ["Plato", "Aristotle", "Socrates", "Confucius"], correct: 0 },
+    { question: "Which philosophy focuses on the greatest happiness for the greatest number?", answers: ["Utilitarianism", "Existentialism", "Stoicism", "Empiricism"], correct: 0 },
+    { question: "Who is known for his idea of the 'categorical imperative'?", answers: ["Immanuel Kant", "John Locke", "Friedrich Nietzsche", "David Hume"], correct: 0 },
+    { question: "What is the name of the philosophical school founded by Aristotle?", answers: ["Lyceum", "Academy", "Stoa", "Epicureanism"], correct: 0 },
+    { question: "Which philosopher is famous for his statement 'I think, therefore I am'?", answers: ["René Descartes", "Socrates", "Plato", "Aristotle"], correct: 0 },
+    { question: "Which philosopher is known for the concept of the 'will to power'?", answers: ["Friedrich Nietzsche", "Karl Marx", "Jean-Paul Sartre", "Immanuel Kant"], correct: 0 },
+    { question: "Who is the author of 'The Tao Te Ching'?", answers: ["Laozi", "Confucius", "Sun Tzu", "Zhuangzi"], correct: 0 },
+    { question: "Which philosophical movement focuses on reason and evidence?", answers: ["Empiricism", "Rationalism", "Romanticism", "Idealism"], correct: 0 },
+    { question: "Which philosopher is associated with the theory of 'tabula rasa'?", answers: ["John Locke", "Thomas Hobbes", "Jean-Jacques Rousseau", "Immanuel Kant"], correct: 0 },
+    { question: "What philosophy advocates living in accordance with nature?", answers: ["Stoicism", "Existentialism", "Pragmatism", "Nihilism"], correct: 0 },
+    { question: "Which philosopher wrote 'Meditations'?", answers: ["Marcus Aurelius", "Epictetus", "Socrates", "Seneca"], correct: 0 },
+    { question: "Which philosopher is known for the idea of the 'social contract'?", answers: ["Jean-Jacques Rousseau", "John Locke", "Karl Marx", "Thomas Hobbes"], correct: 0 },
+    { question: "Which philosophy asserts that existence precedes essence?", answers: ["Existentialism", "Nihilism", "Rationalism", "Pragmatism"], correct: 0 }
+],
+Languages: [
+    { question: "What is the most spoken language in the world?", answers: ["Mandarin", "English", "Spanish", "Hindi"], correct: 0 },
+    { question: "What language is predominantly spoken in Brazil?", answers: ["Portuguese", "Spanish", "English", "French"], correct: 0 },
+    { question: "Which language has the most native speakers?", answers: ["Mandarin", "Spanish", "English", "Hindi"], correct: 0 },
+    { question: "Which language is primarily spoken in Australia?", answers: ["English", "Mandarin", "French", "Spanish"], correct: 0 },
+    { question: "Which language is spoken in Japan?", answers: ["Japanese", "Korean", "Chinese", "Vietnamese"], correct: 0 },
+    { question: "Which language is written from right to left?", answers: ["Arabic", "English", "Spanish", "French"], correct: 0 },
+    { question: "Which language has the most words?", answers: ["English", "Mandarin", "Spanish", "Russian"], correct: 0 },
+    { question: "Which language is spoken in Egypt?", answers: ["Arabic", "French", "English", "Spanish"], correct: 0 },
+    { question: "Which language is the official language of Mexico?", answers: ["Spanish", "English", "Portuguese", "French"], correct: 0 },
+    { question: "What is the official language of China?", answers: ["Mandarin", "Cantonese", "English", "Japanese"], correct: 0 },
+    { question: "Which language has the most official countries?", answers: ["English", "French", "Spanish", "Arabic"], correct: 0 },
+    { question: "What is the national language of Israel?", answers: ["Hebrew", "Arabic", "English", "Yiddish"], correct: 0 },
+    { question: "Which language is spoken in Argentina?", answers: ["Spanish", "Portuguese", "Italian", "English"], correct: 0 },
+    { question: "Which language is the primary language spoken in Canada?", answers: ["English", "French", "Spanish", "Portuguese"], correct: 0 },
+    { question: "Which language is spoken by the majority in South Korea?", answers: ["Korean", "Chinese", "English", "Japanese"], correct: 0 }
+],
+Movies: [
+    { question: "Who directed the movie 'Inception'?", answers: ["Christopher Nolan", "Steven Spielberg", "Quentin Tarantino", "Martin Scorsese"], correct: 0 },
+    { question: "Which movie won the Academy Award for Best Picture in 2020?", answers: ["Parasite", "1917", "Once Upon a Time in Hollywood", "The Irishman"], correct: 0 },
+    { question: "Who played the character of Jack Dawson in Titanic?", answers: ["Leonardo DiCaprio", "Brad Pitt", "Johnny Depp", "Tom Hanks"], correct: 0 },
+    { question: "Which movie features the quote 'May the Force be with you'?", answers: ["Star Wars", "Harry Potter", "The Lord of the Rings", "The Matrix"], correct: 0 },
+    { question: "Who directed the movie 'Pulp Fiction'?", answers: ["Quentin Tarantino", "Christopher Nolan", "Martin Scorsese", "Ridley Scott"], correct: 0 },
+    { question: "Which movie did Meryl Streep win her first Oscar for?", answers: ["Sophie's Choice", "The Iron Lady", "Kramer vs Kramer", "The Devil Wears Prada"], correct: 0 },
+    { question: "Who played the role of Tony Stark/Iron Man in the Marvel Cinematic Universe?", answers: ["Robert Downey Jr.", "Chris Hemsworth", "Chris Evans", "Mark Ruffalo"], correct: 0 },
+    { question: "What year was the movie 'The Shawshank Redemption' released?", answers: ["1994", "1990", "1995", "2000"], correct: 0 },
+    { question: "Which movie franchise is known for the character of Frodo Baggins?", answers: ["The Lord of the Rings", "Harry Potter", "Star Wars", "Pirates of the Caribbean"], correct: 0 },
+    { question: "What is the name of the fictional African country in 'Black Panther'?", answers: ["Wakanda", "Genovia", "Elbonia", "Narnia"], correct: 0 },
+    { question: "Who starred as the Joker in 'The Dark Knight'?", answers: ["Heath Ledger", "Jared Leto", "Joaquin Phoenix", "Jack Nicholson"], correct: 0 },
+    { question: "What year did the movie 'Avatar' release?", answers: ["2009", "2008", "2010", "2007"], correct: 0 },
+    { question: "Who directed 'Titanic'?", answers: ["James Cameron", "Steven Spielberg", "Ridley Scott", "George Lucas"], correct: 0 },
+    { question: "Which movie features a character called 'Forrest Gump'?", answers: ["Forrest Gump", "The Green Mile", "Catch Me If You Can", "The Terminal"], correct: 0 },
+    { question: "What is the name of the fictional wizarding school in the 'Harry Potter' series?", answers: ["Hogwarts", "Beauxbatons", "Durmstrang", "Ilvermorny"], correct: 0 },
+    { question: "Which movie features a large asteroid heading toward Earth, and was directed by Michael Bay?", answers: ["Armageddon", "Deep Impact", "The Day After Tomorrow", "Independence Day"], correct: 0 }
+],
+Gaming: [
+    { question: "What is the best-selling video game of all time?", answers: ["Minecraft", "Grand Theft Auto V", "Tetris", "Wii Sports"], correct: 0 },
+    { question: "Which gaming console is developed by Sony?", answers: ["PlayStation", "Xbox", "Nintendo Switch", "GameCube"], correct: 0 },
+    { question: "Which game series features the character of Link?", answers: ["The Legend of Zelda", "Super Mario", "Final Fantasy", "Halo"], correct: 0 },
+    { question: "Which game is known for the phrase 'Battle Royale'?", answers: ["Fortnite", "PUBG", "Apex Legends", "Call of Duty"], correct: 0 },
+    { question: "In 'Minecraft', what material is needed to craft a pickaxe?", answers: ["Wood", "Stone", "Iron", "Gold"], correct: 0 },
+    { question: "Which game features the city of 'Liberty City'?", answers: ["Grand Theft Auto", "Assassin's Creed", "Red Dead Redemption", "The Elder Scrolls"], correct: 0 },
+    { question: "Which game character is known for the phrase 'It's-a me, Mario!'?", answers: ["Mario", "Luigi", "Donkey Kong", "Yoshi"], correct: 0 },
+    { question: "What is the main character's name in the 'Halo' series?", answers: ["Master Chief", "Cortana", "Marcus Fenix", "Nathan Drake"], correct: 0 },
+    { question: "Which game features the 'Pikachu' character?", answers: ["Pokémon", "Digimon", "Yu-Gi-Oh!", "Dragon Ball Z"], correct: 0 },
+    { question: "What is the name of the virtual world in 'The Sims'?", answers: ["SimNation", "SimWorld", "SimCity", "The Simverse"], correct: 0 },
+    { question: "Which game features the 'Spartan' soldier as its main protagonist?", answers: ["Halo", "Call of Duty", "Battlefield", "Gears of War"], correct: 0 },
+    { question: "Which game allows players to drive a car and play soccer?", answers: ["Rocket League", "FIFA", "Gran Turismo", "Need for Speed"], correct: 0 },
+    { question: "What is the name of the dragon in 'Skyrim'?", answers: ["Alduin", "Smaug", "Shenron", "Toothless"], correct: 0 },
+    { question: "In which game do players fight for survival on an island, collecting weapons and resources?", answers: ["Fortnite", "PUBG", "Apex Legends", "Hunt: Showdown"], correct: 0 },
+    { question: "Which video game features the character 'Kratos'?", answers: ["God of War", "The Last of Us", "Uncharted", "Horizon Zero Dawn"], correct: 0 }
+],
+Fashion: [
+    { question: "Who is the designer behind the brand 'Chanel'?", answers: ["Coco Chanel", "Karl Lagerfeld", "Gianni Versace", "Christian Dior"], correct: 0 },
+    { question: "Which fabric is known for its smooth texture and is often used in evening gowns?", answers: ["Silk", "Cotton", "Linen", "Wool"], correct: 0 },
+    { question: "What is the name of the luxury fashion house founded by Christian Dior?", answers: ["Dior", "Louis Vuitton", "Gucci", "Prada"], correct: 0 },
+    { question: "Which famous fashion icon is known for her little black dress?", answers: ["Audrey Hepburn", "Marilyn Monroe", "Grace Kelly", "Elizabeth Taylor"], correct: 0 },
+    { question: "Which fashion brand is symbolized by a crocodile logo?", answers: ["Lacoste", "Ralph Lauren", "Tommy Hilfiger", "Polo"], correct: 0 },
+    { question: "What year was the first Victoria's Secret fashion show held?", answers: ["1995", "2000", "1988", "1990"], correct: 0 },
+    { question: "Which fashion designer is known for the creation of the 'wrap dress'?", answers: ["Diane von Fürstenberg", "Yves Saint Laurent", "Guccio Gucci", "Karl Lagerfeld"], correct: 0 },
+    { question: "Which famous fashion house is known for the 'Louis Vuitton' monogram?", answers: ["Louis Vuitton", "Chanel", "Hermès", "Prada"], correct: 0 },
+    { question: "Which popular fashion style is known for its denim materials and casual aesthetic?", answers: ["Casual", "Bohemian", "Streetwear", "Preppy"], correct: 0 },
+    { question: "What type of shoes are known for their red soles?", answers: ["Christian Louboutin", "Jimmy Choo", "Manolo Blahnik", "Gucci"], correct: 0 },
+    { question: "Which brand is known for the 'Mona Lisa' logo?", answers: ["Mona Lisa", "Gucci", "Louis Vuitton", "Prada"], correct: 0 },
+    { question: "Which famous designer introduced the first pair of skinny jeans?", answers: ["Gianni Versace", "Coco Chanel", "Yves Saint Laurent", "Pierre Cardin"], correct: 0 },
+    { question: "What type of hats are often associated with British fashion?", answers: ["Fedoras", "Berets", "Bowler hats", "Panama hats"], correct: 0 },
+    { question: "Which fashion brand is famous for its 'red carpet' gowns?", answers: ["Oscar de la Renta", "Chanel", "Versace", "Louis Vuitton"], correct: 0 },
+    { question: "Which accessory is the main item associated with Hermes?", answers: ["Birkin Bag", "Clutch", "Backpack", "Satchel"], correct: 0 }
+],
+
+
+            // Add more categories...
+        };
+
+        let currentCategory = "";
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let correct = 0;
+        let wrong = 0;
+        let skipped = 0;
+
+        const totalQuestionsElement = document.getElementById("total-questions");
+        const attemptedQuestionsElement = document.getElementById("attempted-questions");
+        const pendingQuestionsElement = document.getElementById("pending-questions");
+        const correctQuestionsElement = document.getElementById("correct-questions");
+        const wrongQuestionsElement = document.getElementById("wrong-questions");
+        const questionElement = document.querySelector(".question");
+        const answersElement = document.querySelector(".answers");
+        const nextButton = document.getElementById("next-btn");
+
+        function selectCategory(category) {
+    currentCategory = category;
+    currentQuestionIndex = 0;
+    score = 0;
+    correct = 0;
+    wrong = 0;
+    skipped = 0;
+    updateProgress();
+    showQuiz();
+    document.getElementById("homepage").style.display = "none";
+    document.getElementById("quiz-container").style.display = "flex";
+}
+
+
+function showQuiz() {
+    const questions = categories[currentCategory];
+    if (currentQuestionIndex >= questions.length) {
+        showResults();
+        return;
+    }
+
+    const questionData = questions[currentQuestionIndex];
+    questionElement.textContent = questionData.question;
+
+    // Shuffle the answers and get their corresponding indices
+    const { shuffledAnswers, shuffledCorrectIndex } = getRandomShuffledAnswers(
+        questionData.answers,
+        questionData.correct
+    );
+
+    answersElement.innerHTML = ""; // Clear previous answers
+    shuffledAnswers.forEach((answer, index) => {
+        const button = document.createElement("button");
+        button.textContent = answer;
+        button.onclick = () => selectAnswer(index, shuffledCorrectIndex); // Pass the shuffled correct index
+        answersElement.appendChild(button);
+    });
+
+    nextButton.disabled = true;
+}
+
+function getRandomShuffledAnswers(answers, correctIndex) {
+    const shuffledAnswers = [...answers];
+    const shuffledIndices = shuffledAnswers.map((_, index) => index);
+
+    // Shuffle answers and maintain the correct index association
+    for (let i = shuffledAnswers.length - 1; i > 0; i--) {
+        const randomIndex = Math.floor(Math.random() * (i + 1));
+
+        // Swap answers
+        [shuffledAnswers[i], shuffledAnswers[randomIndex]] = [shuffledAnswers[randomIndex], shuffledAnswers[i]];
+
+        // Swap indices to track the correct answer
+        [shuffledIndices[i], shuffledIndices[randomIndex]] = [shuffledIndices[randomIndex], shuffledIndices[i]];
+    }
+
+    const shuffledCorrectIndex = shuffledIndices.indexOf(correctIndex);
+    return { shuffledAnswers, shuffledCorrectIndex };
+}
+
+function selectAnswer(selectedIndex, correctIndex) {
+    const buttons = answersElement.querySelectorAll("button");
+
+    buttons.forEach((button, index) => {
+        button.disabled = true;
+
+        if (index === correctIndex) {
+            button.style.backgroundColor = "green"; // Highlight correct answer
+        } else if (index === selectedIndex) {
+            button.style.backgroundColor = "red"; // Highlight incorrect answer
+        }
+    });
+
+    if (selectedIndex === correctIndex) {
+        score += 2;
+        correct++;
+    } else {
+        score -= 1;
+        wrong++;
+    }
+
+    updateProgress();
+    nextButton.disabled = false;
+}
+
+function showQuiz() {
+    const questions = categories[currentCategory];
+    if (currentQuestionIndex >= questions.length) {
+        showResults();
+        return;
+    }
+
+    const questionData = questions[currentQuestionIndex];
+    questionElement.textContent = questionData.question;
+
+    // Shuffle the answers using random numbers
+    const shuffledAnswers = getRandomShuffledAnswers(questionData.answers);
+
+    answersElement.innerHTML = ""; // Clear previous answers
+    shuffledAnswers.forEach((answer, index) => {
+        const button = document.createElement("button");
+        button.textContent = answer;
+        button.onclick = () => selectAnswer(shuffledAnswers.indexOf(answer)); // Keep track of the correct index
+        answersElement.appendChild(button);
+    });
+
+    nextButton.disabled = true;
+}
+
+// Shuffle the answers using random number indices
+function getRandomShuffledAnswers(answers) {
+    const shuffledAnswers = [];
+    const usedIndices = [];
+
+    while (shuffledAnswers.length < answers.length) {
+        const randomIndex = Math.floor(Math.random() * answers.length);
+        if (!usedIndices.includes(randomIndex)) {
+            shuffledAnswers.push(answers[randomIndex]);
+            usedIndices.push(randomIndex);
+        }
+    }
+    return shuffledAnswers;
+}
+
+
+
+function selectAnswer(selectedIndex) {
+    const questionData = categories[currentCategory][currentQuestionIndex];
+
+    // Disable all buttons after selection
+    const buttons = answersElement.querySelectorAll('button');
+    buttons.forEach((button, index) => {
+        button.disabled = true;
+        if (index === selectedIndex) {
+            // Highlight correct or wrong answer
+            if (index === questionData.correct) {
+                button.style.backgroundColor = 'green'; // Correct answer
+                score += 2; // Add score for correct answer
+                correct++; // Increment correct counter
+            } else {
+                button.style.backgroundColor = 'red'; // Wrong answer
+                score -= 1; // Subtract score for wrong answer
+                wrong++; // Increment wrong counter
+            }
+        }
+    });
+
+    // Update the score and progress
+    attemptedQuestionsElement.textContent = correct + wrong;
+    pendingQuestionsElement.textContent = categories[currentCategory].length - (correct + wrong + skipped);
+    correctQuestionsElement.textContent = correct;
+    wrongQuestionsElement.textContent = wrong;
+
+    // Update the progress bar
+    updateProgress();
+
+    // Enable the "Next" button after answer is selected
+    nextButton.disabled = false;
+}
+
+function skipQuestion() {
+    skipped++;
+    currentQuestionIndex++;
+    showQuiz();
+
+    // Remove any background color when skipping the question
+    const buttons = answersElement.querySelectorAll('button');
+    buttons.forEach(button => {
+        button.style.backgroundColor = ''; // No background color for skipped question
+    });
+
+    // Update the progress bar
+    updateProgress();
+}
+    
+
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            showQuiz();
+        }
+
+        function showResults() {
+    // Display the final score and other results on the results page
+    document.getElementById("final-score").textContent = score;
+    document.getElementById("final-correct").textContent = correct;
+    document.getElementById("final-wrong").textContent = wrong;
+    document.getElementById("final-skipped").textContent = skipped;
+
+    // Hide the quiz container and show the results page
+    document.getElementById("quiz-container").style.display = "none";
+    document.getElementById("results-page").style.display = "block";
+}
+
+function restartQuiz() {
+    // Reset the quiz state
+    currentCategory = "";
+    currentQuestionIndex = 0;
+    score = 0;
+    correct = 0;
+    wrong = 0;
+    skipped = 0;
+
+    // Reset the progress indicators
+    updateProgress();
+
+    // Hide the results page and show the homepage
+    document.getElementById("results-page").style.display = "none";
+    document.getElementById("homepage").style.display = "grid";
+
+    // Hide the quiz container so it will show when a category is selected
+    document.getElementById("quiz-container").style.display = "none";
+}
+
+
+
+function updateProgress() {
+    const totalQuestions = categories[currentCategory] ? categories[currentCategory].length : 0;
+    totalQuestionsElement.textContent = totalQuestions;
+    attemptedQuestionsElement.textContent = correct + wrong;
+    pendingQuestionsElement.textContent = totalQuestions - (correct + wrong + skipped);
+    correctQuestionsElement.textContent = correct;
+    wrongQuestionsElement.textContent = wrong;
+
+    // Update the progress bar
+    const progressPercentage = ((correct + wrong) / totalQuestions) * 100;
+    document.getElementById("progress-bar").style.width = progressPercentage + "%";
+}
+function showQuiz() {
+    const questions = categories[currentCategory];
+    if (currentQuestionIndex >= questions.length) {
+        showResults();
+        return;
+    }
+
+    const questionData = questions[currentQuestionIndex];
+    questionElement.textContent = questionData.question;
+
+    // Shuffle the answers and get their corresponding indices
+    const { shuffledAnswers, shuffledCorrectIndex } = getRandomShuffledAnswers(
+        questionData.answers,
+        questionData.correct
+    );
+
+    answersElement.innerHTML = ""; // Clear previous answers
+    shuffledAnswers.forEach((answer, index) => {
+        const button = document.createElement("button");
+        button.textContent = answer;
+        button.onclick = () => selectAnswer(index, shuffledCorrectIndex); // Pass the shuffled correct index
+        answersElement.appendChild(button);
+    });
+
+    nextButton.disabled = true;
+}
+
+function getRandomShuffledAnswers(answers, correctIndex) {
+    const shuffledAnswers = [...answers];
+    const shuffledIndices = shuffledAnswers.map((_, index) => index);
+
+    // Shuffle answers and maintain the correct index association
+    for (let i = shuffledAnswers.length - 1; i > 0; i--) {
+        const randomIndex = Math.floor(Math.random() * (i + 1));
+
+        // Swap answers
+        [shuffledAnswers[i], shuffledAnswers[randomIndex]] = [shuffledAnswers[randomIndex], shuffledAnswers[i]];
+
+        // Swap indices to track the correct answer
+        [shuffledIndices[i], shuffledIndices[randomIndex]] = [shuffledIndices[randomIndex], shuffledIndices[i]];
+    }
+
+    const shuffledCorrectIndex = shuffledIndices.indexOf(correctIndex);
+    return { shuffledAnswers, shuffledCorrectIndex };
+}
+
+function selectAnswer(selectedIndex, shuffledCorrectIndex) {
+    const buttons = answersElement.querySelectorAll("button");
+
+    buttons.forEach((button, index) => {
+        button.disabled = true;
+
+        if (index === shuffledCorrectIndex) {
+            button.style.backgroundColor = "green"; // Highlight correct answer
+        } else if (index === selectedIndex) {
+            button.style.backgroundColor = "red"; // Highlight incorrect answer
+        }
+    });
+
+    if (selectedIndex === shuffledCorrectIndex) {
+        score += 2;
+        correct++;
+    } else {
+        score -= 1;
+        wrong++;
+    }
+
+    updateProgress();
+    nextButton.disabled = false;
+}
+
+
+    </script>
+    
+</body>
+</html>
